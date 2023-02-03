@@ -1,1 +1,81 @@
 /* You can add global styles to this file, and also import other style files */
+@each $prop, $abbrev in (margin: m, padding: p) {
+  $infix: '';
+  @for $index from 0 through 64 {
+    $size: $index * 4;
+    $length: #{$size}px;
+
+    .#{$abbrev}#{$infix}-#{$size} {
+      #{$prop}: $length !important;
+    }
+  }
+
+  @for $index from 0 through 64 {
+    $size: $index * 4;
+    $length: #{$size}px;
+
+    .#{$abbrev}x#{$infix}-#{$size} {
+      #{$prop}-right: $length !important;
+      #{$prop}-left: $length !important;
+    }
+
+    .#{$abbrev}y#{$infix}-#{$size} {
+      #{$prop}-top: $length !important;
+      #{$prop}-bottom: $length !important;
+    }
+  }
+
+  @for $index from 0 through 64 {
+    $size: $index * 4;
+    $length: #{$size}px;
+
+    .#{$abbrev}t#{$infix}-#{$size} {
+      #{$prop}-top: $length !important;
+    }
+
+    .#{$abbrev}r#{$infix}-#{$size} {
+      #{$prop}-right: $length !important;
+    }
+
+    .#{$abbrev}b#{$infix}-#{$size} {
+      #{$prop}-bottom: $length !important;
+    }
+
+    .#{$abbrev}l#{$infix}-#{$size} {
+      #{$prop}-left: $length !important;
+    }
+  }
+
+  @if ($abbrev == m) {
+    // Some special margin utils for flex alignments
+    .m#{$infix}-auto {
+      margin: auto !important;
+    }
+
+    .mt#{$infix}-auto {
+      margin-top: auto !important;
+    }
+
+    .mr#{$infix}-auto {
+      margin-right: auto !important;
+    }
+
+    .mb#{$infix}-auto {
+      margin-bottom: auto !important;
+    }
+
+    .ml#{$infix}-auto {
+      margin-left: auto !important;
+    }
+
+    .mx#{$infix}-auto {
+      margin-right: auto !important;
+      margin-left: auto !important;
+    }
+
+    .my#{$infix}-auto {
+      margin-top: auto !important;
+      margin-bottom: auto !important;
+    }
+  }
+}

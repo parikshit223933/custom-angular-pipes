@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": false
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -102,6 +105,37 @@
               "src/styles.scss"
             ],
             "scripts": []
+          }
+        }
+      }
+    },
+    "ninjas-transforms": {
+      "projectType": "library",
+      "root": "projects/ninjas-transforms",
+      "sourceRoot": "projects/ninjas-transforms/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ninjas-transforms/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ninjas-transforms/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ninjas-transforms/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ninjas-transforms/src/test.ts",
+            "tsConfig": "projects/ninjas-transforms/tsconfig.spec.json",
+            "karmaConfig": "projects/ninjas-transforms/karma.conf.js"
           }
         }
       }
