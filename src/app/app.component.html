@@ -25,11 +25,8 @@
         </select>
       </div>
       <div>
-        <label for="appendZero">appendZero: </label>
-        <select id="appendZero" formControlName="appendZero">
-          <option [value]="true">true</option>
-          <option [value]="false">false</option>
-        </select>
+        <label for="minDigits">minDigits: </label>
+        <input id="minDigits" type="number" formControlName="minDigits">
       </div>
       <div>
         <label for="showZero">showZero: </label>
@@ -37,6 +34,17 @@
           <option [value]="true">true</option>
           <option [value]="false">false</option>
         </select>
+      </div>
+      <div>
+        <label for="unitWithCapitalLetter">unitWithCapitalLetter: </label>
+        <select id="unitWithCapitalLetter" formControlName="unitWithCapitalLetter">
+          <option [value]="true">true</option>
+          <option [value]="false">false</option>
+        </select>
+      </div>
+      <div>
+        <label for="entityJoiner">entityJoiner: </label>
+        <input id="entityJoiner" type="text" formControlName="entityJoiner">
       </div>
     </div>
     <div>
@@ -46,8 +54,10 @@
         fg.controls['epochInSeconds'].value | duration:
           fg.controls['limitTo'].value :
           ['true', true].includes(fg.controls['shortHand'].value) :
-          ['true', true].includes(fg.controls['appendZero'].value) :
-          ['true', true].includes(fg.controls['showZero'].value)
+          fg.controls['minDigits'].value :
+          ['true', true].includes(fg.controls['showZero'].value):
+          ['true', true].includes(fg.controls['unitWithCapitalLetter'].value) :
+          fg.controls['entityJoiner'].value
         }}
       </b>
     </div>

@@ -24,85 +24,183 @@
 
     var i0__namespace = /*#__PURE__*/_interopNamespace(i0);
 
+    var DurationAdjustmentLayer = /** @class */ (function () {
+        function DurationAdjustmentLayer(epochsInSeconds) {
+            this.durationEntityHash = {};
+            this.joiner = ' ';
+            this.zerosVisible = false;
+            this.shortHand = false;
+            this.UnitHash = {
+                YEAR: 'year',
+                DAY: 'day',
+                HOUR: 'hour',
+                MINUTE: 'minute',
+                SECOND: 'second',
+            };
+            this.setDurationEntityHash(epochsInSeconds);
+            this.setRespectiveForms();
+        }
+        DurationAdjustmentLayer.prototype.setLimit = function (limitToEntity) {
+            if (limitToEntity === void 0) { limitToEntity = 'seconds'; }
+            switch (limitToEntity) {
+                case 'years':
+                    delete this.durationEntityHash.day;
+                    delete this.durationEntityHash.hour;
+                    delete this.durationEntityHash.minute;
+                    delete this.durationEntityHash.second;
+                    return;
+                case 'days':
+                    delete this.durationEntityHash.hour;
+                    delete this.durationEntityHash.minute;
+                    delete this.durationEntityHash.second;
+                    return;
+                case 'hours':
+                    delete this.durationEntityHash.minute;
+                    delete this.durationEntityHash.second;
+                    return;
+                case 'minutes':
+                    delete this.durationEntityHash.second;
+                    return;
+                case 'seconds':
+                    return;
+                default:
+                    return;
+            }
+        };
+        DurationAdjustmentLayer.prototype.setJoiner = function (joiner) {
+            if (joiner === void 0) { joiner = ''; }
+            this.joiner = joiner;
+        };
+        DurationAdjustmentLayer.prototype.setShortHand = function (useShortHand) {
+            this.shortHand = useShortHand;
+            if (!this.shortHand)
+                return;
+            if (this.durationEntityHash.year) {
+                this.durationEntityHash.year.unit = 'y';
+            }
+            if (this.durationEntityHash.day) {
+                this.durationEntityHash.day.unit = 'd';
+            }
+            if (this.durationEntityHash.hour) {
+                this.durationEntityHash.hour.unit = 'h';
+            }
+            if (this.durationEntityHash.minute) {
+                this.durationEntityHash.minute.unit = 'm';
+            }
+            if (this.durationEntityHash.second) {
+                this.durationEntityHash.second.unit = 's';
+            }
+        };
+        DurationAdjustmentLayer.prototype.setMinimumDigits = function (minDigits) {
+            var _this = this;
+            if (minDigits === null)
+                return;
+            Object.values(this.UnitHash).forEach(function (hKey) {
+                if (!_this.durationEntityHash[hKey])
+                    return;
+                if (_this.durationEntityHash[hKey].count.length >= minDigits)
+                    return;
+                _this.durationEntityHash[hKey].count =
+                    _this.repeatStringNumTimes('0', minDigits - _this.durationEntityHash[hKey].count.length) + _this.durationEntityHash[hKey].count;
+            });
+        };
+        DurationAdjustmentLayer.prototype.setZeroVisibility = function (zeroCountsVisible) {
+            if (zeroCountsVisible === void 0) { zeroCountsVisible = false; }
+            this.zerosVisible = zeroCountsVisible;
+        };
+        DurationAdjustmentLayer.prototype.getDurationString = function () {
+            var _this = this;
+            var entities = [];
+            Object.values(this.UnitHash).forEach(function (hKey) {
+                if (!_this.durationEntityHash[hKey])
+                    return;
+                if (parseInt(_this.durationEntityHash[hKey].count) == 0 &&
+                    !_this.zerosVisible)
+                    return;
+                entities.push(_this.durationEntityHash[hKey].count +
+                    (_this.shortHand ? '' : ' ') +
+                    _this.durationEntityHash[hKey].unit);
+            });
+            return entities.join(this.joiner);
+        };
+        DurationAdjustmentLayer.prototype.setUnitWithCapitalLetter = function (unitWithCapitalLetter) {
+            var _this = this;
+            if (unitWithCapitalLetter === void 0) { unitWithCapitalLetter = false; }
+            if (!unitWithCapitalLetter)
+                return;
+            Object.values(this.UnitHash).forEach(function (hKey) {
+                if (!_this.durationEntityHash[hKey])
+                    return;
+                _this.durationEntityHash[hKey].unit = _this.capitalize(_this.durationEntityHash[hKey].unit);
+            });
+        };
+        DurationAdjustmentLayer.prototype.setDurationEntityHash = function (epochsInSeconds) {
+            this.durationEntityHash = {
+                year: {
+                    count: Math.floor(epochsInSeconds / 60 / 60 / 24 / 365).toString(),
+                    unit: 'years',
+                },
+                day: {
+                    count: Math.floor((epochsInSeconds / 60 / 60 / 24) % 365).toString(),
+                    unit: 'days',
+                },
+                hour: {
+                    count: Math.floor((epochsInSeconds / 60 / 60) % 24).toString(),
+                    unit: 'hours',
+                },
+                minute: {
+                    count: Math.floor((epochsInSeconds / 60) % 60).toString(),
+                    unit: 'minutes',
+                },
+                second: {
+                    count: Math.floor(epochsInSeconds % 60).toString(),
+                    unit: 'seconds',
+                },
+            };
+        };
+        DurationAdjustmentLayer.prototype.setRespectiveForms = function () {
+            var _this = this;
+            Object.values(this.UnitHash).forEach(function (hKey) {
+                if (!_this.durationEntityHash[hKey])
+                    return;
+                if (parseInt(_this.durationEntityHash[hKey].count) != 1)
+                    return;
+                if (_this.shortHand)
+                    return;
+                _this.durationEntityHash[hKey].unit = _this.durationEntityHash[hKey].unit.slice(0, -1);
+            });
+        };
+        DurationAdjustmentLayer.prototype.repeatStringNumTimes = function (str, times) {
+            if (times <= 0)
+                return '';
+            return str + this.repeatStringNumTimes(str, times - 1);
+        };
+        DurationAdjustmentLayer.prototype.capitalize = function (s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        };
+        return DurationAdjustmentLayer;
+    }());
+
     var DurationPipe = /** @class */ (function () {
         function DurationPipe() {
         }
-        DurationPipe.prototype.getAbbreviation = function (s) {
-            return s[0];
-        };
-        DurationPipe.prototype.capitalize = function (s) {
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        };
-        DurationPipe.prototype.pluralize = function (s) {
-            return s + 's';
-        };
-        DurationPipe.prototype.transform = function (epochs_in_seconds, limit_to, short_hand, append_zero, show_zero) {
-            if (limit_to === void 0) { limit_to = 'seconds'; }
-            if (short_hand === void 0) { short_hand = false; }
-            if (append_zero === void 0) { append_zero = false; }
-            if (show_zero === void 0) { show_zero = false; }
-            var years = Math.floor(epochs_in_seconds / 60 / 60 / 24 / 365);
-            var days = Math.floor((epochs_in_seconds / 60 / 60 / 24) % 365);
-            var hours = Math.floor((epochs_in_seconds / 60 / 60) % 24);
-            var minutes = Math.floor((epochs_in_seconds / 60) % 60);
-            var seconds = Math.floor(epochs_in_seconds % 60);
-            var durationString = '';
-            var isHighestDenominationPresent = false;
-            var entities = [years, days, hours, minutes, seconds];
-            var duration_names = ['year', 'day', 'hour', 'minute', 'second'];
-            for (var i = 0; i < entities.length; i++) {
-                var entityString = entities[i].toString();
-                if (entities[i] !== 0) {
-                    if (!isHighestDenominationPresent) {
-                        isHighestDenominationPresent = true;
-                    }
-                    if (entities[i] < 10 && append_zero) {
-                        entityString = '0' + entityString;
-                    }
-                    durationString +=
-                        entityString +
-                            (short_hand
-                                ? this.getAbbreviation(duration_names[i])
-                                : ' ' + this.capitalize(duration_names[i]));
-                    if (!short_hand) {
-                        durationString +=
-                            entityString === '01' || entityString === '1' ? '' : 's';
-                    }
-                    if (limit_to === this.pluralize(duration_names[i])) {
-                        return durationString.trim();
-                    }
-                    else {
-                        durationString += ' ';
-                    }
-                }
-                else if (entities[i] === 0 &&
-                    limit_to === this.pluralize(duration_names[i]) &&
-                    !durationString) {
-                    return (short_hand
-                        ? 0 + this.getAbbreviation(duration_names[i])
-                        : '0 ' + this.capitalize(this.pluralize(duration_names[i]))).trim();
-                }
-                else if (entities[i] === 0 &&
-                    isHighestDenominationPresent &&
-                    show_zero) {
-                    entityString += '0';
-                    durationString +=
-                        entityString +
-                            (short_hand
-                                ? this.getAbbreviation(duration_names[i])
-                                : ' ' + this.capitalize(duration_names[i]));
-                    if (limit_to === this.pluralize(duration_names[i])) {
-                        return durationString.trim();
-                    }
-                    else {
-                        durationString += ' ';
-                    }
-                }
-                if (limit_to === this.pluralize(duration_names[i])) {
-                    return durationString.trim();
-                }
-            }
-            return durationString.trim();
+        DurationPipe.prototype.transform = function (epochsInSeconds, limitTo, shortHand, minDigits, showZero, unitWithCapitalLetter, entityJoiner) {
+            if (limitTo === void 0) { limitTo = 'seconds'; }
+            if (shortHand === void 0) { shortHand = false; }
+            if (minDigits === void 0) { minDigits = null; }
+            if (showZero === void 0) { showZero = false; }
+            if (unitWithCapitalLetter === void 0) { unitWithCapitalLetter = false; }
+            if (entityJoiner === void 0) { entityJoiner = ' '; }
+            var durationAdjustmentLayer = new DurationAdjustmentLayer(epochsInSeconds);
+            // ORDER MATTERS
+            durationAdjustmentLayer.setLimit(limitTo);
+            durationAdjustmentLayer.setJoiner(entityJoiner);
+            durationAdjustmentLayer.setShortHand(shortHand);
+            durationAdjustmentLayer.setMinimumDigits(minDigits);
+            durationAdjustmentLayer.setZeroVisibility(showZero);
+            durationAdjustmentLayer.setJoiner(entityJoiner);
+            durationAdjustmentLayer.setUnitWithCapitalLetter(unitWithCapitalLetter);
+            return durationAdjustmentLayer.getDurationString();
         };
         return DurationPipe;
     }());

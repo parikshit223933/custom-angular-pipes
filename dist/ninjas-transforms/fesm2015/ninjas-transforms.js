@@ -1,79 +1,166 @@
 import * as i0 from '@angular/core';
 import { Pipe, NgModule } from '@angular/core';
 
-class DurationPipe {
-    getAbbreviation(s) {
-        return s[0];
+class DurationAdjustmentLayer {
+    constructor(epochsInSeconds) {
+        this.durationEntityHash = {};
+        this.joiner = ' ';
+        this.zerosVisible = false;
+        this.shortHand = false;
+        this.UnitHash = {
+            YEAR: 'year',
+            DAY: 'day',
+            HOUR: 'hour',
+            MINUTE: 'minute',
+            SECOND: 'second',
+        };
+        this.setDurationEntityHash(epochsInSeconds);
+        this.setRespectiveForms();
+    }
+    setLimit(limitToEntity = 'seconds') {
+        switch (limitToEntity) {
+            case 'years':
+                delete this.durationEntityHash.day;
+                delete this.durationEntityHash.hour;
+                delete this.durationEntityHash.minute;
+                delete this.durationEntityHash.second;
+                return;
+            case 'days':
+                delete this.durationEntityHash.hour;
+                delete this.durationEntityHash.minute;
+                delete this.durationEntityHash.second;
+                return;
+            case 'hours':
+                delete this.durationEntityHash.minute;
+                delete this.durationEntityHash.second;
+                return;
+            case 'minutes':
+                delete this.durationEntityHash.second;
+                return;
+            case 'seconds':
+                return;
+            default:
+                return;
+        }
+    }
+    setJoiner(joiner = '') {
+        this.joiner = joiner;
+    }
+    setShortHand(useShortHand) {
+        this.shortHand = useShortHand;
+        if (!this.shortHand)
+            return;
+        if (this.durationEntityHash.year) {
+            this.durationEntityHash.year.unit = 'y';
+        }
+        if (this.durationEntityHash.day) {
+            this.durationEntityHash.day.unit = 'd';
+        }
+        if (this.durationEntityHash.hour) {
+            this.durationEntityHash.hour.unit = 'h';
+        }
+        if (this.durationEntityHash.minute) {
+            this.durationEntityHash.minute.unit = 'm';
+        }
+        if (this.durationEntityHash.second) {
+            this.durationEntityHash.second.unit = 's';
+        }
+    }
+    setMinimumDigits(minDigits) {
+        if (minDigits === null)
+            return;
+        Object.values(this.UnitHash).forEach((hKey) => {
+            if (!this.durationEntityHash[hKey])
+                return;
+            if (this.durationEntityHash[hKey].count.length >= minDigits)
+                return;
+            this.durationEntityHash[hKey].count =
+                this.repeatStringNumTimes('0', minDigits - this.durationEntityHash[hKey].count.length) + this.durationEntityHash[hKey].count;
+        });
+    }
+    setZeroVisibility(zeroCountsVisible = false) {
+        this.zerosVisible = zeroCountsVisible;
+    }
+    getDurationString() {
+        let entities = [];
+        Object.values(this.UnitHash).forEach((hKey) => {
+            if (!this.durationEntityHash[hKey])
+                return;
+            if (parseInt(this.durationEntityHash[hKey].count) == 0 &&
+                !this.zerosVisible)
+                return;
+            entities.push(this.durationEntityHash[hKey].count +
+                (this.shortHand ? '' : ' ') +
+                this.durationEntityHash[hKey].unit);
+        });
+        return entities.join(this.joiner);
+    }
+    setUnitWithCapitalLetter(unitWithCapitalLetter = false) {
+        if (!unitWithCapitalLetter)
+            return;
+        Object.values(this.UnitHash).forEach((hKey) => {
+            if (!this.durationEntityHash[hKey])
+                return;
+            this.durationEntityHash[hKey].unit = this.capitalize(this.durationEntityHash[hKey].unit);
+        });
+    }
+    setDurationEntityHash(epochsInSeconds) {
+        this.durationEntityHash = {
+            year: {
+                count: Math.floor(epochsInSeconds / 60 / 60 / 24 / 365).toString(),
+                unit: 'years',
+            },
+            day: {
+                count: Math.floor((epochsInSeconds / 60 / 60 / 24) % 365).toString(),
+                unit: 'days',
+            },
+            hour: {
+                count: Math.floor((epochsInSeconds / 60 / 60) % 24).toString(),
+                unit: 'hours',
+            },
+            minute: {
+                count: Math.floor((epochsInSeconds / 60) % 60).toString(),
+                unit: 'minutes',
+            },
+            second: {
+                count: Math.floor(epochsInSeconds % 60).toString(),
+                unit: 'seconds',
+            },
+        };
+    }
+    setRespectiveForms() {
+        Object.values(this.UnitHash).forEach((hKey) => {
+            if (!this.durationEntityHash[hKey])
+                return;
+            if (parseInt(this.durationEntityHash[hKey].count) != 1)
+                return;
+            if (this.shortHand)
+                return;
+            this.durationEntityHash[hKey].unit = this.durationEntityHash[hKey].unit.slice(0, -1);
+        });
+    }
+    repeatStringNumTimes(str, times) {
+        if (times <= 0)
+            return '';
+        return str + this.repeatStringNumTimes(str, times - 1);
     }
     capitalize(s) {
         return s.charAt(0).toUpperCase() + s.slice(1);
     }
-    pluralize(s) {
-        return s + 's';
-    }
-    transform(epochs_in_seconds, limit_to = 'seconds', short_hand = false, append_zero = false, show_zero = false) {
-        const years = Math.floor(epochs_in_seconds / 60 / 60 / 24 / 365);
-        const days = Math.floor((epochs_in_seconds / 60 / 60 / 24) % 365);
-        const hours = Math.floor((epochs_in_seconds / 60 / 60) % 24);
-        const minutes = Math.floor((epochs_in_seconds / 60) % 60);
-        const seconds = Math.floor(epochs_in_seconds % 60);
-        let durationString = '';
-        let isHighestDenominationPresent = false;
-        const entities = [years, days, hours, minutes, seconds];
-        const duration_names = ['year', 'day', 'hour', 'minute', 'second'];
-        for (let i = 0; i < entities.length; i++) {
-            let entityString = entities[i].toString();
-            if (entities[i] !== 0) {
-                if (!isHighestDenominationPresent) {
-                    isHighestDenominationPresent = true;
-                }
-                if (entities[i] < 10 && append_zero) {
-                    entityString = '0' + entityString;
-                }
-                durationString +=
-                    entityString +
-                        (short_hand
-                            ? this.getAbbreviation(duration_names[i])
-                            : ' ' + this.capitalize(duration_names[i]));
-                if (!short_hand) {
-                    durationString +=
-                        entityString === '01' || entityString === '1' ? '' : 's';
-                }
-                if (limit_to === this.pluralize(duration_names[i])) {
-                    return durationString.trim();
-                }
-                else {
-                    durationString += ' ';
-                }
-            }
-            else if (entities[i] === 0 &&
-                limit_to === this.pluralize(duration_names[i]) &&
-                !durationString) {
-                return (short_hand
-                    ? 0 + this.getAbbreviation(duration_names[i])
-                    : '0 ' + this.capitalize(this.pluralize(duration_names[i]))).trim();
-            }
-            else if (entities[i] === 0 &&
-                isHighestDenominationPresent &&
-                show_zero) {
-                entityString += '0';
-                durationString +=
-                    entityString +
-                        (short_hand
-                            ? this.getAbbreviation(duration_names[i])
-                            : ' ' + this.capitalize(duration_names[i]));
-                if (limit_to === this.pluralize(duration_names[i])) {
-                    return durationString.trim();
-                }
-                else {
-                    durationString += ' ';
-                }
-            }
-            if (limit_to === this.pluralize(duration_names[i])) {
-                return durationString.trim();
-            }
-        }
-        return durationString.trim();
+}
+
+class DurationPipe {
+    transform(epochsInSeconds, limitTo = 'seconds', shortHand = false, minDigits = null, showZero = false, unitWithCapitalLetter = false, entityJoiner = ' ') {
+        const durationAdjustmentLayer = new DurationAdjustmentLayer(epochsInSeconds);
+        // ORDER MATTERS
+        durationAdjustmentLayer.setLimit(limitTo);
+        durationAdjustmentLayer.setJoiner(entityJoiner);
+        durationAdjustmentLayer.setShortHand(shortHand);
+        durationAdjustmentLayer.setMinimumDigits(minDigits);
+        durationAdjustmentLayer.setZeroVisibility(showZero);
+        durationAdjustmentLayer.setJoiner(entityJoiner);
+        durationAdjustmentLayer.setUnitWithCapitalLetter(unitWithCapitalLetter);
+        return durationAdjustmentLayer.getDurationString();
     }
 }
 DurationPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: DurationPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });

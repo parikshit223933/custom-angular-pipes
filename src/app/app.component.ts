@@ -1,7 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
@@ -15,7 +12,9 @@ export class AppComponent {
     epochInSeconds: new FormControl(null),
     limitTo: new FormControl('seconds'),
     shortHand: new FormControl(false),
-    appendZero: new FormControl(false),
+    minDigits: new FormControl(null),
     showZero: new FormControl(false),
+    unitWithCapitalLetter: new FormControl(false),
+    entityJoiner: new FormControl(' '),
   });
 }
