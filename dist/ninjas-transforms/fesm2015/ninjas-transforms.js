@@ -17,6 +17,11 @@ class DurationAdjustmentLayer {
         this.setDurationEntityHash(epochsInSeconds);
         this.setRespectiveForms();
     }
+    /**
+     setLimit - Sets the limit of duration entities to be shown in the final output.
+     @param {SmallPluralDurationEntityType} [limitToEntity='seconds'] The duration entity upto which the duration should be limited.
+     @returns {void}
+     */
     setLimit(limitToEntity = 'seconds') {
         switch (limitToEntity) {
             case 'years':
@@ -43,9 +48,19 @@ class DurationAdjustmentLayer {
                 return;
         }
     }
+    /**
+     * Sets the string used to join the duration entities
+     * @param joiner - The string used to join the duration entities. Default value is an empty string.
+     */
     setJoiner(joiner = '') {
         this.joiner = joiner;
     }
+    /**
+     Set the shorthand flag to determine if the unit should be abbreviated.
+     If set to true, it will abbreviate the units to y for year, d for day,
+     h for hour, m for minute, and s for second.
+     @param {boolean} useShortHand - flag to use shorthand for units
+     */
     setShortHand(useShortHand) {
         this.shortHand = useShortHand;
         if (!this.shortHand)
@@ -66,6 +81,11 @@ class DurationAdjustmentLayer {
             this.durationEntityHash.second.unit = 's';
         }
     }
+    /**
+     Set the minimum number of digits for each duration entity.
+     If the count of a duration entity is less than the minimum digits, it will be padded with zeros until it meets the requirement.
+     @param {number|null} minDigits - The minimum number of digits for each duration entity.
+     */
     setMinimumDigits(minDigits) {
         if (minDigits === null)
             return;
@@ -78,9 +98,22 @@ class DurationAdjustmentLayer {
                 this.repeatStringNumTimes('0', minDigits - this.durationEntityHash[hKey].count.length) + this.durationEntityHash[hKey].count;
         });
     }
+    /**
+     This method sets the visibility of zero count durations in the final result string.
+     If zeroCountsVisible is set to true, durations with zero count will be included in the final result string.
+     By default, zeroCountsVisible is set to false.
+     @param {boolean} zeroCountsVisible - Determines the visibility of zero count durations in the final result string.
+     */
     setZeroVisibility(zeroCountsVisible = false) {
         this.zerosVisible = zeroCountsVisible;
     }
+    /**
+     * getDurationString() generates a string representation of the duration,
+     * taking into account options such as shortHand, joiner and minimumDigits.
+     * It includes only non-zero values, unless zeroCountsVisible is set to true.
+     *
+     * @returns {string}  - A string representation of the duration
+     */
     getDurationString() {
         let entities = [];
         Object.values(this.UnitHash).forEach((hKey) => {
@@ -95,6 +128,10 @@ class DurationAdjustmentLayer {
         });
         return entities.join(this.joiner);
     }
+    /**
+     * setUnitWithCapitalLetter - function to set the unit type in the duration string to be capitalized
+     * @param unitWithCapitalLetter - whether to use capital letter unit or not (default false)
+     */
     setUnitWithCapitalLetter(unitWithCapitalLetter = false) {
         if (!unitWithCapitalLetter)
             return;
@@ -149,6 +186,23 @@ class DurationAdjustmentLayer {
     }
 }
 
+/**
+ * DurationPipe is an angular pipe that can be used to format duration in seconds in a readable string format.
+ * The duration is provided in epochsInSeconds and it can be transformed into different
+ * formats like minutes, hours, days, etc.
+ *
+ * limitTo: specify the highest entity that should be shown in the duration string.
+ * shortHand: whether or not to use abbreviated form of entities, such as "s" for "seconds".
+ * minDigits: minimum number of digits for each entity.
+ * showZero: show entity even if the value is 0.
+ * unitWithCapitalLetter: show unit with a capital letter, such as "Seconds".
+ * entityJoiner: the string used to join different entities in the duration string.
+ *
+ * @example
+ *
+ * <p>{{ epochsInSeconds | duration }}</p>
+ * <p>{{ epochsInSeconds | duration: 'minutes': true: 2: true: true: ',' }}</p>
+ */
 class DurationPipe {
     transform(epochsInSeconds, limitTo = 'seconds', shortHand = false, minDigits = null, showZero = false, unitWithCapitalLetter = false, entityJoiner = ' ') {
         const durationAdjustmentLayer = new DurationAdjustmentLayer(epochsInSeconds);

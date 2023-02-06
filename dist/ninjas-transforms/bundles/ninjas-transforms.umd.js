@@ -40,6 +40,11 @@
             this.setDurationEntityHash(epochsInSeconds);
             this.setRespectiveForms();
         }
+        /**
+         setLimit - Sets the limit of duration entities to be shown in the final output.
+         @param {SmallPluralDurationEntityType} [limitToEntity='seconds'] The duration entity upto which the duration should be limited.
+         @returns {void}
+         */
         DurationAdjustmentLayer.prototype.setLimit = function (limitToEntity) {
             if (limitToEntity === void 0) { limitToEntity = 'seconds'; }
             switch (limitToEntity) {
@@ -67,10 +72,20 @@
                     return;
             }
         };
+        /**
+         * Sets the string used to join the duration entities
+         * @param joiner - The string used to join the duration entities. Default value is an empty string.
+         */
         DurationAdjustmentLayer.prototype.setJoiner = function (joiner) {
             if (joiner === void 0) { joiner = ''; }
             this.joiner = joiner;
         };
+        /**
+         Set the shorthand flag to determine if the unit should be abbreviated.
+         If set to true, it will abbreviate the units to y for year, d for day,
+         h for hour, m for minute, and s for second.
+         @param {boolean} useShortHand - flag to use shorthand for units
+         */
         DurationAdjustmentLayer.prototype.setShortHand = function (useShortHand) {
             this.shortHand = useShortHand;
             if (!this.shortHand)
@@ -91,6 +106,11 @@
                 this.durationEntityHash.second.unit = 's';
             }
         };
+        /**
+         Set the minimum number of digits for each duration entity.
+         If the count of a duration entity is less than the minimum digits, it will be padded with zeros until it meets the requirement.
+         @param {number|null} minDigits - The minimum number of digits for each duration entity.
+         */
         DurationAdjustmentLayer.prototype.setMinimumDigits = function (minDigits) {
             var _this = this;
             if (minDigits === null)
@@ -104,10 +124,23 @@
                     _this.repeatStringNumTimes('0', minDigits - _this.durationEntityHash[hKey].count.length) + _this.durationEntityHash[hKey].count;
             });
         };
+        /**
+         This method sets the visibility of zero count durations in the final result string.
+         If zeroCountsVisible is set to true, durations with zero count will be included in the final result string.
+         By default, zeroCountsVisible is set to false.
+         @param {boolean} zeroCountsVisible - Determines the visibility of zero count durations in the final result string.
+         */
         DurationAdjustmentLayer.prototype.setZeroVisibility = function (zeroCountsVisible) {
             if (zeroCountsVisible === void 0) { zeroCountsVisible = false; }
             this.zerosVisible = zeroCountsVisible;
         };
+        /**
+         * getDurationString() generates a string representation of the duration,
+         * taking into account options such as shortHand, joiner and minimumDigits.
+         * It includes only non-zero values, unless zeroCountsVisible is set to true.
+         *
+         * @returns {string}  - A string representation of the duration
+         */
         DurationAdjustmentLayer.prototype.getDurationString = function () {
             var _this = this;
             var entities = [];
@@ -123,6 +156,10 @@
             });
             return entities.join(this.joiner);
         };
+        /**
+         * setUnitWithCapitalLetter - function to set the unit type in the duration string to be capitalized
+         * @param unitWithCapitalLetter - whether to use capital letter unit or not (default false)
+         */
         DurationAdjustmentLayer.prototype.setUnitWithCapitalLetter = function (unitWithCapitalLetter) {
             var _this = this;
             if (unitWithCapitalLetter === void 0) { unitWithCapitalLetter = false; }
@@ -181,6 +218,23 @@
         return DurationAdjustmentLayer;
     }());
 
+    /**
+     * DurationPipe is an angular pipe that can be used to format duration in seconds in a readable string format.
+     * The duration is provided in epochsInSeconds and it can be transformed into different
+     * formats like minutes, hours, days, etc.
+     *
+     * limitTo: specify the highest entity that should be shown in the duration string.
+     * shortHand: whether or not to use abbreviated form of entities, such as "s" for "seconds".
+     * minDigits: minimum number of digits for each entity.
+     * showZero: show entity even if the value is 0.
+     * unitWithCapitalLetter: show unit with a capital letter, such as "Seconds".
+     * entityJoiner: the string used to join different entities in the duration string.
+     *
+     * @example
+     *
+     * <p>{{ epochsInSeconds | duration }}</p>
+     * <p>{{ epochsInSeconds | duration: 'minutes': true: 2: true: true: ',' }}</p>
+     */
     var DurationPipe = /** @class */ (function () {
         function DurationPipe() {
         }
