@@ -1,24 +1,49 @@
-# NinjasTransforms
+# CustomAngularPipes
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.
+A simple lightweight library exposing some very useful custom built pipes for angular projects.
 
-## Code scaffolding
+## Installation
 
-Run `ng generate component component-name --project ninjas-transforms` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ninjas-transforms`.
-> Note: Don't forget to add `--project ninjas-transforms` or else it will be added to the default project in your `angular.json` file. 
+To install this package, run the following command in your project:
 
-## Build
+```shell
+npm i ninjas-transforms
+```
 
-Run `ng build ninjas-transforms` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Usage
+To use this pipe in your Angular project, import the NinjasTransformsModule in your component's module:
 
-## Publishing
+```ts
+import {NinjasTransformsModule} from 'ninjas-transforms'
+```
 
-After building your library with `ng build ninjas-transforms`, go to the dist folder `cd dist/ninjas-transforms` and run `npm publish`.
+All the pipes will be accessible to all the components declared by this module.
 
-## Running unit tests
+Finally you can use this pipe in your template like this.
 
-Run `ng test ninjas-transforms` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```html
+{{ epochsInSeconds | duration }}
+```
 
-## Further help
+## Options
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+The duration pipe accepts the following options:
+
+- limitTo: Limits the duration to a specific entity (e.g. seconds, minutes, hours, etc.). Possible values are seconds, minutes, hours, days, weeks, months, and years.
+- shortHand: Determines whether the entity names are displayed in shorthand (e.g. s, m, h, etc.).
+- minDigits: Specifies the minimum number of digits to display for each entity.
+- showZero: Determines whether entities with a value of zero are displayed.
+- unitWithCapitalLetter: Specifies whether the first letter of the entity name is capitalized.
+- entityJoiner: Specifies the string used to join the individual entities.
+
+Here is an example of using the options:
+
+```html
+{{ epochsInSeconds | duration: 'hours': true: 2: false: true: '-' }}
+```
+
+## Contributing
+If you find any bugs or have suggestions for improvements, please open an issue or a pull request on GitHub.
+
+## License
+This project is licensed under the MIT License.
