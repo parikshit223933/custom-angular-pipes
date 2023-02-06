@@ -10,6 +10,7 @@ version-select
 ng build ninjas-transforms
 
 cd ../../dist/ninjas-transforms
+npm version patch
 npm publish
 
 cd ../..
