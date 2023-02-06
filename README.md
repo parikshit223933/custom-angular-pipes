@@ -1,27 +1,49 @@
 # CustomAngularPipes
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.18.
+A simple lightweight library exposing some very useful custom built pipes for angular projects.
 
-## Development server
+## Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+To install this package, run the following command in your project:
 
-## Code scaffolding
+```shell
+npm i ninjas-transforms
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Usage
+To use this pipe in your Angular project, import the NinjasTransformsModule in your component's module:
 
-## Build
+```ts
+import {NinjasTransformsModule} from 'ninjas-transforms'
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+All the pipes will be accessible to all the components declared by this module.
 
-## Running unit tests
+Finally you can use this pipe in your template like this.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```html
+{{ epochsInSeconds | duration }}
+```
 
-## Running end-to-end tests
+## Options
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+The duration pipe accepts the following options:
 
-## Further help
+- limitTo: Limits the duration to a specific entity (e.g. seconds, minutes, hours, etc.). Possible values are seconds, minutes, hours, days, weeks, months, and years.
+- shortHand: Determines whether the entity names are displayed in shorthand (e.g. s, m, h, etc.).
+- minDigits: Specifies the minimum number of digits to display for each entity.
+- showZero: Determines whether entities with a value of zero are displayed.
+- unitWithCapitalLetter: Specifies whether the first letter of the entity name is capitalized.
+- entityJoiner: Specifies the string used to join the individual entities.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Here is an example of using the options:
+
+```html
+{{ epochsInSeconds | duration: 'hours': true: 2: false: true: '-' }}
+```
+
+## Contributing
+If you find any bugs or have suggestions for improvements, please open an issue or a pull request on GitHub.
+
+## License
+This project is licensed under the MIT License.
